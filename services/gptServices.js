@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from "openai";
-
+import config from "../config.js";
 const model = {
   model: "gpt-3.5-turbo",
   temperature: 0.2,
@@ -10,11 +10,11 @@ export default class gptSeervice {
   async init() {
     try {
       const configuration = new Configuration({
-        apiKey: "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",
+        apiKey: config.gpt,
       });
       openai = new OpenAIApi(configuration);
     } catch (error) {
-      console.log(error.response);
+      console.log(error);
     }
   }
 
