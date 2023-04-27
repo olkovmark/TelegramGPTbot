@@ -16,15 +16,34 @@ const history = {};
 //   }),
 // };
 const gpt = new gptSeervice();
+
 const bot = new TelegramBot(config.bot, { polling: true });
 export const telegramServices = () => {
   gpt.init();
 
   bot.on("message", async (e) => {
-    if (e.entities)
+    console.log(e);
+    if (e.entities) {
       if (e.entities[0].type === "mention") {
         return sendGPT(e, true);
       }
+      if (e.entities[0].type === "bot_command") {
+        const promt = e.text
+          .replace(["/image"], "")
+          .replace(["@UkrainkaGPTbot"], "");
+        // const promt = e.text.slice(e.text.indexOf(" ") + 1);
+
+        console.log(promt);
+        if (promt.length > 4) {
+          gpt.getImage(promt, (url) => {
+            bot.sendPhoto(e.chat.id, url);
+          });
+        } else {
+          bot.sendMessage(e.chat.id, "Short message");
+        }
+        return;
+      }
+    }
 
     if (e.reply_to_message)
       if (e.reply_to_message.from.username === "UkrainkaGPTbot") {
@@ -33,7 +52,7 @@ export const telegramServices = () => {
   });
 };
 
-async function sendGPT(e, isNew) {
+function sendGPT(e, isNew) {
   const chat = e.chat.id;
   const user = e.from.id;
   let message = e.text;

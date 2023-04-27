@@ -30,4 +30,18 @@ export default class gptSeervice {
       return console.log(error);
     }
   }
+
+  async getImage(promt, res) {
+    try {
+      const response = await openai.createImage({
+        prompt: promt,
+        n: 1,
+        size: "256x256",
+      });
+
+      res(response.data.data[0].url);
+    } catch (error) {
+      console.log("getImageError:", error.response.data);
+    }
+  }
 }
